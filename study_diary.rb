@@ -1,9 +1,11 @@
+require 'colorize'
 require_relative 'study_item'
 
 REGISTER = 1
 VIEW     = 2
 SEARCH   = 3
-EXIT     = 4
+DELETE   = 4
+EXIT     = 5
 
 def clear
   system('clear')
@@ -11,7 +13,7 @@ end
 
 def wait_keypress
   puts
-  puts "Pressione Enter para continuar"
+  puts "Pressione Enter para continuar".colorize(:light_green)
   gets
 end
 
@@ -21,35 +23,21 @@ def wait_keypress_and_clear
 end
 
 def welcome
-  'Bem-vindo ao Diário de Estudos, seu companheiro para estudar!'
+  'Bem-vindo ao Diário de Estudos, seu companheiro para estudar!'.colorize(:blue)
 end
 
 def menu
-  puts "[#{REGISTER}] Cadastrar um item para estudar"
-  puts "[#{VIEW}] Ver todos os itens cadastrados"
-  puts "[#{SEARCH}] Buscar um item de estudo"
-  puts "[#{EXIT}] Sair"
-  print 'Escolha uma opção: '
+  puts "[#{REGISTER}] Cadastrar um item para estudar".colorize(:light_blue)
+  puts "[#{VIEW}] Ver todos os itens cadastrados".colorize(:light_blue)
+  puts "[#{SEARCH}] Buscar um item de estudo".colorize(:light_blue)
+  puts "[#{DELETE}] Remover um item de estudo".colorize(:red)
+  puts "[#{EXIT}] Sair".colorize(:yellow)
+  print 'Escolha uma opção: '.colorize(:blue)
   gets.to_i
-end
-
-def print_items
-  puts StudyItem.all
-  puts 'Nenhum item encontrado' if StudyItem.all.empty?
-end
-
-def search_items()
-  print 'Digite uma palavra para procurar: '
-    term = gets.chomp
-    found_items = StudyItem.all.filter do |item|
-      item.include? term
-    end
-    print_items(found_items)
 end
 
 clear
 puts welcome
-study_items = []
 option = menu
 
 loop do
@@ -58,15 +46,17 @@ loop do
   when REGISTER
     StudyItem.register
   when VIEW
-    print_items
+    StudyItem.all
   when SEARCH
-    search_items
+    StudyItem.search
+  when DELETE
+    StudyItem.delete
   when EXIT
     clear
-    puts 'Obrigado por usar o Diário de Estudos'
+    puts 'Obrigado por usar o Diário de Estudos'.colorize(:green)
     break  
   else
-    puts 'Opção inválida'
+    puts 'Opção inválida'.colorize(:red)
   end
   wait_keypress_and_clear
   option = menu

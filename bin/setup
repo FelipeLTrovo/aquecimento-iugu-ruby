@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require "sqlite3"
+include FileUtils
+
+# path to your application root.
+APP_ROOT = File.expand_path('..', __dir__)
+
+def system!(*args)
+  system(*args) || abort("\n== Command #{args} failed ==")
+end
+
+chdir APP_ROOT do
+  puts '== Instalando dependências =='
+  system! 'gem install bundler --conservative'
+  system('bundle check') || system!('bundle install')
+
+  puts "\n== Você está pronto para começar =="
+end
+
+db = SQLite3::Database.new "study_diary.db"
+
+db.execute <<-SQL
+  create table if not exists study_items (
+    id integer primary key autoincrement,
+    title varchar(50),
+    category varchar(50)
+  );
+SQL
